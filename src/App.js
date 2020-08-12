@@ -1,25 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import useFetchJobs from "./useFetchJobs";
+import { Container } from "@material-ui/core";
+import Job from "./components/Job";
+import JobPagination from "./components/JobPagination";
+import "./App.css";
 
 function App() {
+  const [params, setParams] = useState({});
+  const [page, setPage] = useState(1);
+  const { jobs, loading, error } = useFetchJobs(params, page);
+
+  const handlePageChange = (event, value) => {
+    setPage(value)
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <h1>Github Jobs Board</h1>
+      {loading && <h2>Loading...</h2>}
+      {error && <h2>Error...</h2>}
+      {!loading && <JobPagination page={page} onChange={handlePageChange}></JobPagination>}
+
+      {jobs.map((job) => {
+        return <Job key={job.id} job={job}></Job>;
+      })}
+    </Container>
   );
 }
 
